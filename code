@@ -1,3 +1,4 @@
+#15.12 - исправлена матрица ошибок, дерево принятия решений, обработка данных неправильного формата (xls, txt и др)
 from tkinter import *
 from tkinter import filedialog, messagebox
 import tkinter.ttk as ttk
@@ -50,9 +51,88 @@ def clicked_btn_readDataCred():
 
 # Команды меню
 def aboutProgram():
-    messagebox.showinfo(title="О программе", message="Программа CreditSCORE предназначена для автоматизации процесса"
-                                                     " решения выдачи банковских займов."
-                                                               "\nПрограмма разработана Чагановой Ольгой, ОГУ, 2020.")
+
+    newWindow = Toplevel(root)
+    newWindow.title("О программе")
+    newWindow.geometry('600x250')
+    newWindow.resizable(width=False, height=False)
+
+    Label(newWindow, text="Полное наименование:", font=("Arial Bold", 10, 'bold')).place(x=20, y=20)
+    Label(newWindow, text="Автоматизированная система поддержки принятия\n"
+                          "решений \"Кредитный скоринг\"", justify=LEFT,
+          font=("Arial Bold", 10)).place(x=250, y=20)
+
+    Label(newWindow, text="Сокращенное наименование:", font=("Arial Bold", 10, 'bold')).place(x=20, y=70)
+    Label(newWindow, text="Кредитный скоринг", justify=LEFT, font=("Arial Bold", 10)).place(x=250, y=70)
+
+    Label(newWindow, text="Разработчик:", font=("Arial Bold", 10, 'bold')).place(x=20, y=100)
+    Label(newWindow, text="Чаганова Ольга Борисовна, 17ПМ(ба)ПММ", justify=LEFT, font=("Arial Bold", 10)).place(x=250, y=100)
+
+    Label(newWindow, text="Руководители:", font=("Arial Bold", 10, 'bold')).place(x=20, y=130)
+    Label(newWindow, text="Яркова Ольга Николаевна, к.э.н., доцент,\n"
+                          "доцент кафедры математических методов\n"
+                          "и моделей в экономике, ОГУ", justify=LEFT, font=("Arial Bold", 10)).place(x=250, y=130)
+
+    Label(newWindow, text="Год:", font=("Arial Bold", 10, 'bold')).place(x=20, y=200)
+    Label(newWindow, text="2020", justify=LEFT, font=("Arial Bold", 10)).place(x=250, y=200)
+
+
+def helpMethodsAndMetrics():
+    newWindow = Toplevel(root)
+    newWindow.title("Справка: формат входных данных")
+    newWindow.geometry('500x400')
+    newWindow.resizable(width=False, height=False)
+
+    label = Label(newWindow, text="Методы и метрики",
+                  font=("Arial Bold", 12, 'bold'))
+    label.place(x=180, y=10)
+
+    text = Text(newWindow, width=55, height=20, wrap=WORD)
+    text.insert(1.0, "Кредитный скоринг — это процесс оценки заемщика кредитной организацией."
+                     " Скоринг производится с помощью построения скоринговой модели,"
+                     " которая учитывает характеристики потенциального заемщика,"
+                     " влияющие на его способность расплачиваться по кредиту.\n\n"
+                     "В настоящей программе модель кредитного скоринга позволяет классифицировать заемщиков"
+                     " на два класса: надежные и ненадежные. Для построения модели скоринга используются"
+                     " следующие методы классификации:\n\n"
+                     "  1. Алгоритм случайного леса;\n\n"
+                     "  2. Логистическая регрессия;\n\n"
+                     "  3. Модель искусственной нейронной сети.\n\n"
+                     "Подробное описание моделей приведено в соответствующих пунктах меню.\n\n"
+                     "Принцип работы программы состоит в следующем: данные о кредитной истории прошлых заемщиков"
+                     "разбиваются на обучающую и тестовую выборки. По обучающей выборке происходит обучение модели"
+                     " кредитного скоринга, по тестовой выборке рассчитываются показатели качества прогноза."
+                     " Построенный классификатор используется для предсказания класса заемщиков, для которых требуется"
+                     " оценить платежеспособность и данные о которых вводит пользователь.\n\n"
+                     "Для того чтобы оценить качество полученного прогноза, рассчитывается матрица ошибок."
+                     " Матрица ошибок представляет собой матрицу размерности 2*2, элементами которой являются:\n\n"
+                     "                      [TN   FP]\n"
+                     "                      [FN   TP]\n\n"
+                     "где\n"
+                     "  TP — истино-положительное решение;\n"
+                     "  TN — истино-отрицательное решение;\n"
+                     "  FP — ложно-положительное решение;\n"
+                     "  FN — ложно-отрицательное решение.\n\n"
+                     "На основе матрицы ошибок вычисляются следующие метрики:\n"
+                     "  1. Accuracy - доля правильных ответов:\n\n"
+                     "      Accuracy = (TP + TN) / (TP + FP + TN + FN)\n\n"
+                     "  2. Precision - доля истинно положительных исходов из всего набора положительных меток:\n\n"
+                     "              Precision = TP / (TP + FP)\n\n"
+                     "  3. Recall -  доля истинно положительных исходов среди всех меток класса,"
+                     " которые были определены как «положительный»:\n\n"
+                     "              Recall = TP / (TP + FN)\n\n"
+                     "  4. F-мера - гармоническое среднее между Precision и Recall:\n\n"
+                     "    F-мера = 2*Precision*Recall / (Precision + Recall)\n\n"
+                     "Для определения качества прогноза также может использовая ROC-кривая – график, показывающий"
+                     " зависимость верно классифицируемых объектов положительного класса от ложно положительно"
+                     " классифицируемых объектов негативного класса. Иначе, это соотношение True Positive Rate (Recall)"
+                     " и False Positive Rate.\n\n"
+                     "Количественной интерпретацие ROC-кривой является показатель AUC — площадь, ограниченная ROC-кривой"
+                     " и осью доли ложных положительных классификаций. Чем выше показатель AUC, тем качественнее"
+                     " классификатор, при этом значение 0,5 соответствует случайному гаданию. Значение менее 0,5"
+                     " говорит, что классификатор действует с точностью до наоборот:"
+                     " если положительные назвать отрицательными и наоборот, классификатор будет работать лучше. ")
+    text.place(x=30, y=50)
 
 
 def helpInputDataFormat():
@@ -65,18 +145,18 @@ def helpInputDataFormat():
                   font=("Arial Bold", 12, 'bold'))
     label.place(x=140, y=10)
 
-    text = Text(newWindow, width=55, height=20)
+    text = Text(newWindow, width=55, height=20, wrap=WORD)
     text.insert(1.0, "Входные данные должны иметь расширение .csv (разделители - запятые).\n\n"
                      "Описания столбцов\n\n"
                      "1. Данные о кредитной истории прошлых заемщиков:\n\n"
                      "  ID: Индивидуальный идентификатор клиента.\n\n"
-                     "  X1: Сумма предоставленного кредита: включает как индивидуальный потребительский кредит, так и семейный (дополнительный) кредит.\n\n"
-                     "  X2: Пол (1 = мужской; 2 = женский).\n\n"
-                     "  X3: Образование (1 = аспирантура; 2 = университет; 3 = средняя школа; 0, 4, 5, 6 = другие).\n\n"
-                     "  X4: Семейное положение (1 = женат; 2 = холост; 3 = развод; 0 = другие).\n\n"
-                     "  X5: Возраст (лет).\n\n"
-                     "  X6 - X11: История прошлых платежей.\n"
-                     "  X6 = статус погашения в текущем месяце; X7 = статус погашения в прошлом месяце;...\n"
+                     "  LIMIT_BAL: Сумма предоставленного кредита: включает как индивидуальный потребительский кредит, так и семейный (дополнительный) кредит.\n\n"
+                     "  SEX: Пол (1 = мужской; 2 = женский).\n\n"
+                     "  EDUCATION: Образование (1 = аспирантура; 2 = университет; 3 = средняя школа; 0, 4, 5, 6 = другие).\n\n"
+                     "  MARRIAGE: Семейное положение (1 = женат; 2 = холост; 3 = развод; 0 = другие).\n\n"
+                     "  AGE: Возраст (лет).\n\n"
+                     "  PAY_1 - PAY_6: История прошлых платежей.\n"
+                     "  PAY_1 = статус погашения в текущем месяце; PAY_2 = статус погашения в прошлом месяце;...\n"
                      "  Шкала измерения статуса погашения:\n"
                      "      -2: Нет потребления;\n"
                      "      -1: оплачено полностью;\n"
@@ -86,16 +166,16 @@ def helpInputDataFormat():
                      "       . . .\n"
                      "       8 = отсрочка платежа на восемь месяцев;\n"
                      "       9 = отсрочка платежа от девяти месяцев и более.\n\n"
-                     "  X12-X17: выписка о сумме счета.\n"
-                     "  X12 = сумма выписки по счету за текущий месяц; X13 = сумма выписки по счету за прошлый месяц; ...\n\n"
-                     "  X18-X23: Сумма предыдущего платежа.\n"
-                     "  X18 = сумма, выплаченная в текущем месяце.; X19 = сумма, выплаченная в прошлом месяце;...\n\n"
-                     "  Y: поведение клиента:\n"
-                     "  Y = 0, если кредит возвращен (надежный заемщик);\n"
-                     "  Y = 1, если кредит не возвращен (ненадежный заемщик).\n"
+                     "  BILL_AMT1 - BILL_AMT6: выписка о сумме счета.\n"
+                     "  BILL_AMT1 = сумма выписки по счету за текущий месяц; BILL_AMT2 = сумма выписки по счету за прошлый месяц; ...\n\n"
+                     "  PAY_AMT1 - PAY_AMT6: Сумма предыдущего платежа.\n"
+                     "  PAY_AMT1 = сумма, выплаченная в текущем месяце.; PAY_AMT2 = сумма, выплаченная в прошлом месяце;...\n\n"
+                     "  dpnm: поведение клиента:\n"
+                     "  dpnm = 0, если кредит возвращен (надежный заемщик);\n"
+                     "  dpnm = 1, если кредит не возвращен (ненадежный заемщик).\n"
                      "  Эти данные используются для обучения модели кредитного скоринга и тестирования ее адекватности.\n\n"
                      "2. Данные о заемщиках, для которых требуется составить прогноз кредитоспособности.\n"
-                     "  Включают в себя переменные ID, X1-X23.")
+                     "  Включают в себя все переменные, которые указаны выше, кроме переменной dpnm.")
     text.place(x=30, y=50)
 
 
@@ -108,7 +188,7 @@ def helpRandomForest():
     label = Label(newWindow, text="Алгоритм классификации Случайный лес (Random Forest)", font=("Arial Bold", 12, 'bold'))
     label.place(x=10, y=10)
 
-    text = Text(newWindow, width=55, height=20)
+    text = Text(newWindow, width=55, height=20, wrap=WORD)
     text.insert(1.0, "Случайный лес (Random Forest)\n\n"
                      "Случайный лес - это алгоритм классификации, заключающийся в использовании ансамбля решающих деревьев. "
                      "Каждое дерево решений – это способ представления правил в иерархической структуре. "
@@ -136,9 +216,9 @@ def helpLogitRegression():
                   font=("Arial Bold", 12, 'bold'))
     label.place(x=20, y=10)
 
-    text = Text(newWindow, width=55, height=18)
+    text = Text(newWindow, width=55, height=18, wrap=WORD)
     text.insert(1.0, "Логистическая регрессия (Logistic Regression)\n\n"
-                     "Случайный лес - метод построения линейного классификатора, позволяющий оценивать апостериорные вероятности принадлежности объектов классам"
+                     "Логистическая регрессия - метод построения линейного классификатора, позволяющий оценивать апостериорные вероятности принадлежности объектов классам"
                      "и на их основе классифицировать объекты.\n\n"
                      "Параметры модели:\n"
                      "1. Алгоритм оптимизации:\n"
@@ -166,7 +246,7 @@ def helpNeuralNetwork():
     label = Label(newWindow, text="Классификация с помощью нейронных сетей\n(Neural Network Classification)", font=("Arial Bold", 12, 'bold'))
     label.place(x=60, y=10)
 
-    text = Text(newWindow, width=55, height=18)
+    text = Text(newWindow, width=55, height=18, wrap=WORD)
     text.insert(1.0, "Нейронная сеть (Neural Network)\n\n"
                      "Сети с прямой связью являются универсальным средством аппроксимации функций, что позволяет их использовать в решении задач классификации. "
                      "Как правило, нейронные сети оказываются наиболее эффективным способом классификации, потому что генерируют фактически большое число регрессионных моделей.\n\n"
@@ -247,6 +327,7 @@ def changeStateNN():
 
 # Классификация: Случайный лес
 def classifyRandomForest():
+
     if cvar1.get():
         criterion = combo_RFCriterion.get()
         try:
@@ -272,27 +353,42 @@ def classifyRandomForest():
         max_features = "auto"
         min_samples_leaf = 1
 
-    pathCred = e_pathCred.get()
-    credit_history = pd.read_csv(pathCred)
 
-    pathAppl = e_pathAppl.get()
-    applicants = pd.read_csv(pathAppl)
+    try:
+        pathCred = e_pathCred.get()
+        credit_history = pd.read_csv(pathCred)
 
-    credit_history = credit_history.drop(['ID'], axis=1)
-    credit_history = credit_history.drop_duplicates()
+        pathAppl = e_pathAppl.get()
+        applicants = pd.read_csv(pathAppl)
 
-    X = credit_history[credit_history.columns[:-1]]  # объясняющие переменные (все столбцы за исключением последнего)
-    y = credit_history['dpnm']  # последний столбец
+        if (credit_history.shape[0] < 50 or applicants.shape[0] < 1): raise Exception
 
-    global labels
-    labels = list(X)
+        credit_history = credit_history.drop(['ID'], axis=1)
+        credit_history = credit_history.drop_duplicates()
 
-    global X_test, y_test
-    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3)
+        X = credit_history[credit_history.columns[:-1]]  # объясняющие переменные (все столбцы за исключением последнего)
+        y = credit_history['dpnm']  # последний столбец
 
+        global labels
+        labels = list(X)
+
+        global X_test, y_test
+        X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3)
+
+    except pd.errors.ParserError:
+        messagebox.showerror(title="Некорректный тип данных",
+                             message="Исходные данные должны иметь расширение .csv.")
+
+    except Exception:
+        messagebox.showerror(title="Некорректный формат данных",
+                             message="Исходные имеют неверный формат.\nПроверьте правильность записи данных"
+                                     " (пункт меню \"Формат входных данных\") и убедитесь, что число наблюдений"
+                                     " для кредитной истории больше пятидесяти, а для новых заемщиков - не меньше одного."
+                                     " Повторите загрузку данных.")
     global clf
-    forest = ensemble.RandomForestClassifier(criterion=criterion, min_samples_split=min_samples_split, max_depth=max_depth,
-                                     n_estimators=n_estimators, max_features=max_features, min_samples_leaf=min_samples_leaf)
+    forest = ensemble.RandomForestClassifier(criterion=criterion, min_samples_split=min_samples_split,
+                                             max_depth=max_depth, n_estimators=n_estimators, max_features=max_features,
+                                             min_samples_leaf=min_samples_leaf, random_state=42)
     clf = forest
 
     forest.fit(X_train, y_train)
@@ -316,14 +412,23 @@ def classifyRandomForest():
     global ConfMatrix
     ConfMatrix = confusion_matrix(y_test, y_pred)
 
-    # Предсказание для заявителей
-    ID = applicants['ID']
-    applicants = applicants.drop(['ID'], axis=1)
-    applicants = applicants.assign(Class=forest.predict(applicants))
-    applicants = applicants.assign(ID=ID)
+    try:
+        # Предсказание для заявителей
+        ID = applicants['ID']
+        applicants = applicants.drop(['ID'], axis=1)
+        applicants = applicants.assign(Class=forest.predict(applicants))
+        applicants = applicants.assign(ID=ID)
 
-    global results
-    results = applicants.loc[:, ['ID', 'Class']]
+        global results
+        results = applicants.loc[:, ['ID', 'Class']]
+
+    except Exception:
+        messagebox.showerror(title="Ошибка ввода данных", message="Данные о новых заемщиках имеют неверный формат. "
+                                                                  "Классификация не будет осуществлена. "
+                                                                  "Повторите загрузку данных.")
+        btn_RFSaveResults.config(state='disabled')
+        btn_LRSaveResults.config(state='disabled')
+        btn_NNSaveResults.config(state='disabled')
 
 
 # Классификация: Логистическая регрессия
@@ -355,17 +460,22 @@ def classifyLogisticRegression():
     pathAppl = e_pathAppl2.get()
     applicants = pd.read_csv(pathAppl)
 
-    credit_history = credit_history.drop(['ID'], axis=1)
-    credit_history = credit_history.drop_duplicates()
+    try:
+        credit_history = credit_history.drop(['ID'], axis=1)
+        credit_history = credit_history.drop_duplicates()
 
-    X = credit_history[credit_history.columns[:-1]]  # объясняющие переменные (все столбцы за исключением последнего)
-    y = credit_history['dpnm']  # последний столбец
+        X = credit_history[credit_history.columns[:-1]]  # объясняющие переменные (все столбцы за исключением последнего)
+        y = credit_history['dpnm']  # последний столбец
 
-    global X_test, y_test
-    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3)
+        global X_test, y_test
+        X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3)
+
+    except Exception:
+        messagebox.showerror(title="Ошибка ввода данных", message="Данные о кредитной истории имеют неверный формат."
+                                                                  " Повторите загрузку данных.")
 
     global clf
-    logit = LogisticRegression(solver=solver, penalty=penalty, C=C, max_iter=max_iter)
+    logit = LogisticRegression(solver=solver, penalty=penalty, C=C, max_iter=max_iter, random_state=42)
     clf = logit
 
     logit.fit(X_train, y_train)
@@ -388,15 +498,23 @@ def classifyLogisticRegression():
     global ConfMatrix
     ConfMatrix = confusion_matrix(y_test, y_pred)
 
+    try:
     # Предсказание для заявителей
-    ID = applicants['ID']
-    applicants = applicants.drop(['ID'], axis=1)
-    applicants = applicants.assign(Class=logit.predict(applicants))
-    applicants = applicants.assign(ID=ID)
+        ID = applicants['ID']
+        applicants = applicants.drop(['ID'], axis=1)
+        applicants = applicants.assign(Class=logit.predict(applicants))
+        applicants = applicants.assign(ID=ID)
 
-    global results
-    results = applicants.loc[:, ['ID', 'Class']]
+        global results
+        results = applicants.loc[:, ['ID', 'Class']]
 
+    except Exception:
+        messagebox.showerror(title="Ошибка ввода данных", message="Данные о заемщиках имеют неверный формат. "
+                                                                  "Классификация не будет осуществлена. "
+                                                                  "Повторите загрузку данных.")
+        btn_RFSaveResults.config(state='disabled')
+        btn_LRSaveResults.config(state='disabled')
+        btn_NNSaveResults.config(state='disabled')
 
 # Классификация: Нейронная сеть
 def classifyNeuralNetwork():
@@ -431,25 +549,30 @@ def classifyNeuralNetwork():
         max_iter = 200
         hidden_layer_sizes = (100,)
 
+    try:
+        pathCred = e_pathCred3.get()
+        credit_history = pd.read_csv(pathCred)
 
-    pathCred = e_pathCred3.get()
-    credit_history = pd.read_csv(pathCred)
+        pathAppl = e_pathAppl3.get()
+        applicants = pd.read_csv(pathAppl)
 
-    pathAppl = e_pathAppl3.get()
-    applicants = pd.read_csv(pathAppl)
+        credit_history = credit_history.drop(['ID'], axis=1)
+        credit_history = credit_history.drop_duplicates()
 
-    credit_history = credit_history.drop(['ID'], axis=1)
-    credit_history = credit_history.drop_duplicates()
+        X = credit_history[credit_history.columns[:-1]]  # объясняющие переменные (все столбцы за исключением последнего)
+        y = credit_history['dpnm']  # последний столбец
 
-    X = credit_history[credit_history.columns[:-1]]  # объясняющие переменные (все столбцы за исключением последнего)
-    y = credit_history['dpnm']  # последний столбец
+        global X_test, y_test
+        X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3)
 
-    global X_test, y_test
-    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3)
+    except Exception:
+        messagebox.showerror(title="Ошибка ввода данных", message="Данные о кредитной истории имеют неверный формат."
+                                                                      " Повторите загрузку данных.")
 
     global clf
-    neuralnet = MLPClassifier(hidden_layer_sizes=hidden_layer_sizes, activation=activation, solver=solver, learning_rate=learning_rate,
-                              learning_rate_init=learning_rate_init, max_iter=max_iter)
+    neuralnet = MLPClassifier(hidden_layer_sizes=hidden_layer_sizes, activation=activation, solver=solver,
+                              learning_rate=learning_rate, learning_rate_init=learning_rate_init, max_iter=max_iter,
+                              random_state=42)
     clf = neuralnet
 
     neuralnet.fit(X_train, y_train)
@@ -471,19 +594,23 @@ def classifyNeuralNetwork():
     global ConfMatrix
     ConfMatrix = confusion_matrix(y_test, y_pred)
 
-    # Предсказание для заявителей
-    ID = applicants['ID']
-    applicants = applicants.drop(['ID'], axis=1)
-    applicants = applicants.assign(Class=neuralnet.predict(applicants))
-    applicants = applicants.assign(ID=ID)
+    try:
+        # Предсказание для заявителей
+        ID = applicants['ID']
+        applicants = applicants.drop(['ID'], axis=1)
+        applicants = applicants.assign(Class=neuralnet.predict(applicants))
+        applicants = applicants.assign(ID=ID)
 
-    global results
-    results = applicants.loc[:, ['ID', 'Class']]
+        global results
+        results = applicants.loc[:, ['ID', 'Class']]
 
-    # Кнопки
-    btn_NNMatrix.config(state="normal")
-    # btn_NNDecisionTree.config(state="normal")
-    btn_NNSaveResults.config(state="normal")
+    except Exception:
+        messagebox.showerror(title="Ошибка ввода данных", message="Данные о заемщиках имеют неверный формат. "
+                                                                  "Классификация не будет осуществлена. "
+                                                                  "Повторите загрузку данных.")
+        btn_RFSaveResults.config(state='disabled')
+        btn_LRSaveResults.config(state='disabled')
+        btn_NNSaveResults.config(state='disabled')
 
 
 # Вывод матрицы ошибок
@@ -493,8 +620,8 @@ def ShowConfusionMatrix():
     sns.heatmap(ConfMatrix, annot=True, cbar=False, cmap='twilight', linewidth=0.5, fmt="d")
     plt.title('Матрица ошибок при классификации заемщиков')
 
-    plt.xlabel('Истинные значения')
-    plt.ylabel('Предсказанные значения')
+    plt.xlabel('Предсказанные значения классов заемщиков')
+    plt.ylabel('Истинные значения')
     ax.xaxis.set_ticklabels(['Надежный', 'Ненадежный'])
     ax.yaxis.set_ticklabels(['Надежный', 'Ненадежный'])
     plt.show()
@@ -503,8 +630,9 @@ def ShowConfusionMatrix():
 # Визуализация дерева
 def VisualizeDecisionTree():
     estimator = clf.estimators_[0]
-    fig = plt.figure(figsize=(15, 10))
-    fig = tree.plot_tree(estimator, fontsize=8, feature_names=labels, filled=True)
+    fig = plt.figure(figsize=(21, 6))
+    fig = tree.plot_tree(estimator, fontsize=6, feature_names=labels, filled=True,
+                         class_names=["Надежный", "Ненадежный"], proportion=True)
     plt.show()
 
 
@@ -512,6 +640,7 @@ def VisualizeDecisionTree():
 def BuiltRocCurve():
     plot_roc_curve(clf, X_test, y_test)
     plt.show()
+
 
 # Сохранение результатов прогнозирования
 def SaveResults():
@@ -521,7 +650,7 @@ def SaveResults():
 
 # Основная форма
 root = Tk()
-root.title('CreditSCORE')
+root.title('Кредитный скоринг')
 root.geometry('600x600')
 root.resizable(width=False, height=False)
 
@@ -530,6 +659,7 @@ mainmenu = Menu(root)
 root.config(menu=mainmenu)
 
 helpMenu = Menu(mainmenu, tearoff=0)
+helpMenu.add_command(label="Методы и метрики", command=helpMethodsAndMetrics)
 helpMenu.add_command(label="Формат входных данных", command=helpInputDataFormat)
 helpMenu.add_command(label="Случайный лес", command=helpRandomForest)
 helpMenu.add_command(label="Логистическая регрессия", command=helpLogitRegression)
@@ -689,7 +819,7 @@ btn_RFRocCurve.place(x=400, y=480)
 # Кнопка Сохранить результат прогноза
 btn_RFSaveResults = Button(tab1, text="Сохранить результат", font=("Arial Bold", 10), width=20,
                            command=SaveResults, state='disabled')
-btn_RFSaveResults .place(x=400, y=520)
+btn_RFSaveResults.place(x=400, y=520)
 
 
 # -----------Вкладка "ЛОГИСТИЧЕСКАЯ РЕГРЕССИЯ"-----------------------------
@@ -907,6 +1037,11 @@ e_NNMaxIter.place(x=380, y=245)
 # Кнопка Составить прогноз
 btn_forecast3 = Button(tab3, text="Составить прогноз", font=("Arial Bold", 12), width=20, command=classifyNeuralNetwork)
 btn_forecast3.place(x=220, y=340)
+
+# newWindow = Toplevel(tab3)
+# newWindow.geometry('150x50')
+# progress = ttk.Progressbar(newWindow, orient=HORIZONTAL, length=100, mode='indeterminate')
+# progress.place(x=20, y=10)
 
 # Метрики прогноза
 Label(tab3, text="Метрики прогноза", font=("Arial Bold", 12, 'bold')).place(x=30, y=390)
